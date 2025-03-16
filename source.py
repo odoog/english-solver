@@ -71,10 +71,15 @@ def get_correct_answers_for_type(plain_right_answer_text):
     correct_answers = [answer.strip() for answer in correct_answers]
     return correct_answers
 
-def get_answers_from_file():
-    with open("answers.html", "r", encoding="utf-8") as file:
-        soup = BeautifulSoup(file, "html.parser")
+def get_answers_from_url(url, driver):
+    # Fetch the HTML content from the URL
 
+    driver.get(url)
+
+    answers_page_text = driver.page_source
+
+    soup = BeautifulSoup(answers_page_text, 'html.parser')
+    
     answers = {}
     feedback_elements = soup.select(".feedback")
 
@@ -179,15 +184,19 @@ if __name__ == "__main__":
     password_field.send_keys(config["password"])
     login_button.click()
 
-    # Get answers from file
-    answers = get_answers_from_file()
+    # Get answers from URL
+    answers = get_answers_from_url(config['quiz_review_url'], driver)
 
     # Navigate to the quiz URL
     driver.get(config['quiz_url'])
 
     # Loop through questions
     while True:
-        answer_question(answers)
+        try:
+            answer_question(answers)
+        except Exception as e:
+            print(f"An error occurred: {e}. Skip this question.")
+
         time.sleep(config['sleep_between_questions'])
         try:
             next_button = driver.find_element(By.CSS_SELECTOR, "input[value='Следующая страница']")
@@ -197,5 +206,8 @@ if __name__ == "__main__":
             break
 
     print("Ответы завершены, ожидание перед завершением.")
-    time.sleep(config['sleep_before_finish'])
+    
+    # Wait for user to press Enter to finish the script
+    input("Press Enter to finish...")
+
     driver.quit()
