@@ -1,0 +1,8 @@
+{
+  "sleep_between_questions": 3,
+  "sleep_before_finish": 30,
+  "sleep_after_sortable_list": 15,
+  "quiz_url": "https://online.mospolytech.ru/mod/quiz/attempt.php?attempt={ATTEMPT_ID}",
+  "username": "{YOUR_LOGIN}",
+  "password": "{YOUR_PASSWORD}"
+}
